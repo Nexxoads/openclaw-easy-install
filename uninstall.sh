@@ -22,7 +22,8 @@ echo "  • El contenedor Docker 'openclaw-local'"
 echo "  • La imagen Docker descargada"
 echo "  • El directorio $HOME/openclaw-local (¡incluyendo tus datos!)"
 echo ""
-read -r -p "  ¿Estás seguro de que quieres desinstalar OpenClaw? [s/N]: " CONFIRM
+# Leer desde /dev/tty para que funcione tanto con curl|bash como ejecutando el script directamente
+read -r -p "  ¿Estás seguro de que quieres desinstalar OpenClaw? [s/N]: " CONFIRM </dev/tty
 
 if [[ ! "$CONFIRM" =~ ^[sS]$ ]]; then
     echo ""
@@ -44,7 +45,7 @@ else
 fi
 
 # Eliminar la imagen
-if docker images ghcr.io/openclaw/openclaw | grep -q openclaw-docker; then
+if docker images ghcr.io/openclaw/openclaw | grep -q "openclaw"; then
     echo -e "  ${CYAN}▶ Eliminando imagen Docker...${NC}"
     docker rmi ghcr.io/openclaw/openclaw:latest 2>/dev/null || true
     echo -e "  ${GREEN}✔ Imagen eliminada${NC}"
