@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw — Instalador Comunitario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0a0c10;
+    --surface:   #111318;
+    --border:    #1e2330;
+    --accent:    #00e5ff;
+    --accent2:   #7c4dff;
+    --green:     #00e676;
+    --red:       #ff5252;
+    --yellow:    #ffd740;
+    --text:      #e8eaf0;
+    --muted:     #6b7280;
+    --code-bg:   #0d1117;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Grid background ─────────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Glow orbs ───────────────────────────────────────────────── */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0,229,255,.12), transparent 70%);
+    top: -100px; left: -100px;
+    animation: drift 12s ease-in-out infinite alternate;
+  }
+  .orb-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(124,77,255,.1), transparent 70%);
+    bottom: 0; right: -80px;
+    animation: drift 16s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes drift {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(40px, 30px); }
+  }
+
+  /* ── Layout ──────────────────────────────────────────────────── */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ── Header ──────────────────────────────────────────────────── */
+  header {
+    padding: 60px 0 48px;
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,229,255,.08);
+    border: 1px solid rgba(0,229,255,.2);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    margin-bottom: 32px;
+    animation: fadeDown .6s ease both;
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  h1 {
+    font-size: clamp(42px, 8vw, 72px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    animation: fadeDown .6s .1s ease both;
+  }
+  .h1-claw { color: var(--accent); }
+  .h1-open { color: var(--text); }
+
+  .tagline {
+    margin-top: 20px;
+    font-size: 18px;
+    color: var(--muted);
+    font-weight: 400;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    animation: fadeDown .6s .2s ease both;
+  }
+
+  @keyframes fadeDown {
+    from { opacity:0; transform:translateY(-16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ── OS Detector ─────────────────────────────────────────────── */
+  .os-detect-section {
+    margin-top: 52px;
+    animation: fadeUp .7s .3s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .os-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px 12px 0 0;
+    padding: 6px;
+    border-bottom: none;
+  }
+
+  .os-tab {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .os-tab:hover { color: var(--text); background: var(--border); }
+  .os-tab.active {
+    background: rgba(0,229,255,.1);
+    color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(0,229,255,.2) inset;
+  }
+  .os-tab svg { flex-shrink: 0; }
+
+  .install-box {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 0 0 12px 12px;
+    padding: 28px 24px;
+  }
+
+  .os-panel { display: none; }
+  .os-panel.active { display: block; }
+
+  .cmd-label {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .cmd-block {
+    position: relative;
+    background: #060810;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 56px 18px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    line-height: 1.6;
+    word-break: break-all;
+    cursor: text;
+    user-select: all;
+  }
+  .cmd-block .prompt { color: var(--muted); user-select: none; }
+
+  .copy-btn {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    background: var(--border);
+    border: none;
+    border-radius: 6px;
+    color: var(--muted);
+    padding: 6px 8px;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .copy-btn:hover { background: rgba(0,229,255,.15); color: var(--accent); }
+  .copy-btn.copied { background: rgba(0,230,118,.15); color: var(--green); }
+
+  .os-note {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: rgba(255,215,64,.05);
+    border-left: 3px solid var(--yellow);
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    color: #b0a070;
+    line-height: 1.6;
+  }
+  .os-note strong { color: var(--yellow); }
+  .os-note a { color: var(--accent); text-decoration: none; }
+  .os-note a:hover { text-decoration: underline; }
+
+  /* ── Auto-detect banner ───────────────────────────────────────── */
+  .auto-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,230,118,.06);
+    border: 1px solid rgba(0,230,118,.2);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── Steps ───────────────────────────────────────────────────── */
+  .steps-section {
+    margin-top: 64px;
+    animation: fadeUp .7s .5s ease both;
+  }
+  .section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--muted);
+    margin-bottom: 24px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .step {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    transition: border-color .2s;
+  }
+  .step:first-child { border-radius: 10px 10px 4px 4px; }
+  .step:last-child  { border-radius: 4px 4px 10px 10px; }
+  .step:hover { border-color: rgba(0,229,255,.3); }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: rgba(0,229,255,.06);
+  }
+  .step-content h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .step-content p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .step-content code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  /* ── Footer ──────────────────────────────────────────────────── */
+  footer {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    animation: fadeUp .7s .7s ease both;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  .footer-heart { color: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Proyecto comunitario · Código abierto · Gratis
+    </div>
+    <h1>
+      <span class="h1-open">Open</span><span class="h1-claw">Claw</span>
+    </h1>
+    <p class="tagline">
+      Instala OpenClaw en tu máquina local con un solo comando.<br>
+      Sin tocar archivos. Sin conocimientos de Docker.
+    </p>
+  </header>
+
+  <!-- OS Detector + Install Command -->
+  <section class="os-detect-section">
+
+    <div id="autoBanner" class="auto-banner" style="display:none;">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="autoMsg">Sistema detectado automáticamente</span>
+    </div>
+
+    <div class="os-tabs" role="tablist">
+
+      <button class="os-tab" id="tab-windows" role="tab" onclick="selectOS('windows')" aria-selected="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 5.5L11 4v7.5H3V5.5zm9-1.7L21 2v9.5h-9V3.8zm-9 8.2h8V19L3 17.7v-5.7zm9 .2h9V22l-9-1.5v-8.3z"/>
+        </svg>
+        Windows
+      </button>
+
+      <button class="os-tab" id="tab-macos" role="tab" onclick="selectOS('macos')" aria-selected="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.7 17.6c-.4.9-.6 1.3-1.1 2.1-.7 1.1-1.7 2.4-3 2.4-1.1.1-1.4-.7-2.9-.7s-1.9.8-3 .7c-1.2-.1-2.2-1.3-2.9-2.4-2-2.9-2.2-6.3-1-8.1.9-1.3 2.2-2 3.5-2 1.3 0 2.1.7 3.2.7 1.1 0 1.7-.7 3.2-.7 1.1 0 2.3.6 3.1 1.7-2.7 1.5-2.3 5.3.9 6.3zm-4-13.1c.7-.8 1.1-2 .9-3.1-1 .1-2.2.7-2.9 1.5-.6.8-1.1 2-.9 3.1 1.1.1 2.2-.5 2.9-1.5z"/>
+        </svg>
+        macOS
+      </button>
+
+      <button class="os-tab" id="tab-linux" role="tab" onclick="selectOS('linux')" aria-selected="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C8.3 2 5 5.8 5 10c0 2.4.9 4.5 2.3 6-.3.7-.7 1.4-1.1 1.9-.4.5-.2 1.2.4 1.4.1 0 .3.1.4.1.5 0 .9-.2 1.2-.5.3-.3.5-.6.8-1 .9.4 1.9.6 3 .6s2.1-.2 3-.6c.3.4.5.7.8 1 .3.3.7.5 1.2.5.1 0 .3 0 .4-.1.6-.2.8-.9.4-1.4-.4-.5-.8-1.2-1.1-1.9C18.1 14.5 19 12.4 19 10c0-4.2-3.3-8-7-8zm-2.5 9.5c-.6 0-1-.5-1-1.2s.4-1.2 1-1.2 1 .5 1 1.2-.4 1.2-1 1.2zm5 0c-.6 0-1-.5-1-1.2s.4-1.2 1-1.2 1 .5 1 1.2-.4 1.2-1 1.2z"/>
+        </svg>
+        Linux
+      </button>
+
+    </div>
+
+    <div class="install-box">
+
+      <!-- Windows -->
+      <div class="os-panel" id="panel-windows">
+        <div class="cmd-label">// PowerShell (como Administrador)</div>
+        <div class="cmd-block" id="cmdBlockWindows">
+          <span class="prompt">PS C:\&gt; </span><span id="cmdTextWindows">irm https://raw.githubusercontent.com/Nexxoads/openclaw-easy-install/main/install.ps1 | iex</span>
+          <button type="button" class="copy-btn" id="copyBtnWindows">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar
+          </button>
+        </div>
+        <div class="os-note">
+          <strong>Requisito:</strong> Tener <a href="https://docs.docker.com/desktop/install/windows-install/" target="_blank">Docker Desktop</a> instalado y abierto.<br>
+          <strong>WSL2 (recomendado):</strong> Si usas WSL2, abre tu terminal de Ubuntu/Debian y usa el comando de Linux.
+        </div>
+      </div>
+
+      <!-- macOS -->
+      <div class="os-panel" id="panel-macos">
+        <div class="cmd-label">// Terminal</div>
+        <div class="cmd-block" id="cmdBlockMacos">
+          <span class="prompt">$ </span><span id="cmdTextMacos">curl -sSL https://raw.githubusercontent.com/Nexxoads/openclaw-easy-install/main/install.sh | bash</span>
+          <button type="button" class="copy-btn" id="copyBtnMacos">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar
+          </button>
+        </div>
+        <div class="os-note">
+          <strong>Requisito:</strong> Tener <a href="https://docs.docker.com/desktop/install/mac-install/" target="_blank">Docker Desktop para Mac</a> instalado y en marcha (icono de la ballena en la barra de menú).
+        </div>
+      </div>
+
+      <!-- Linux -->
+      <div class="os-panel" id="panel-linux">
+        <div class="cmd-label">// Terminal (Ubuntu / Debian / WSL2)</div>
+        <div class="cmd-block" id="cmdBlockLinux">
+          <span class="prompt">$ </span><span id="cmdTextLinux">curl -sSL https://raw.githubusercontent.com/Nexxoads/openclaw-easy-install/main/install.sh | bash</span>
+          <button type="button" class="copy-btn" id="copyBtnLinux">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar
+          </button>
+        </div>
+        <div class="os-note">
+          <strong>Requisito:</strong> Tener <a href="https://docs.docker.com/engine/install/ubuntu/" target="_blank">Docker instalado</a>.<br>
+          Si no tienes Docker: <code>curl -fsSL https://get.docker.com | sh</code>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Steps -->
+  <section class="steps-section">
+    <div class="section-title">// ¿Qué hace el instalador?</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3>Detecta tu entorno</h3>
+          <p>Comprueba automáticamente que Docker está instalado y en marcha. Si no lo está, te indica exactamente dónde descargarlo para tu sistema.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3>Crea la carpeta de datos</h3>
+          <p>Genera <code>~/openclaw-local/</code> con todos los archivos de configuración necesarios. Tus datos siempre quedan en tu máquina.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3>Descarga la imagen oficial</h3>
+          <p>Hace <code>docker pull</code> de la imagen oficial <code>phioranex/openclaw-docker:latest</code> directamente desde Docker Hub.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h3>Arranca el contenedor</h3>
+          <p>Lanza OpenClaw con <code>restart: unless-stopped</code> — se vuelve a encender solo cada vez que reinicias el ordenador.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <h3>Muestra los siguientes pasos</h3>
+          <p>Al terminar, aparecen todos los comandos que necesitas: configuración inicial, ver logs, parar, reiniciar y desinstalar.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>Hecho con <span class="footer-heart">♥</span> para la comunidad · No oficial · Sin afiliación con los autores de OpenClaw</p>
+    <p style="margin-top:8px;">
+      <a id="footerRepo" href="https://github.com/Nexxoads/openclaw-easy-install" target="_blank">GitHub</a>
+      &nbsp;·&nbsp;
+      <a id="footerIssues" href="https://github.com/Nexxoads/openclaw-easy-install/issues" target="_blank">Reportar un problema</a>
+    </p>
+  </footer>
+
+</div>
+
+<script>
+  /** Repo GitHub: en Pages (usuario.github.io/nombre-repo/) se deduce sola; si no, fallback. */
+  const REPO_DEFAULT = 'Nexxoads/openclaw-easy-install';
+  const BRANCH = 'main';
+
+  function getGithubRepoSlug() {
+    const sub = location.hostname.toLowerCase().match(/^([^.]+)\.github\.io$/i);
+    if (sub) {
+      const pathParts = location.pathname.split('/').filter(Boolean);
+      const repo = pathParts[0];
+      if (repo) return sub[1] + '/' + repo;
+    }
+    return REPO_DEFAULT;
+  }
+
+  function applyGithubLinks() {
+    const slug = getGithubRepoSlug();
+    const raw = 'https://raw.githubusercontent.com/' + slug + '/' + BRANCH;
+    const win = 'irm ' + raw + '/install.ps1 | iex';
+    const sh  = 'curl -sSL ' + raw + '/install.sh | bash';
+    const tw = document.getElementById('cmdTextWindows');
+    const tm = document.getElementById('cmdTextMacos');
+    const tl = document.getElementById('cmdTextLinux');
+    if (tw) tw.textContent = win;
+    if (tm) tm.textContent = sh;
+    if (tl) tl.textContent = sh;
+    const base = 'https://github.com/' + slug;
+    const fr = document.getElementById('footerRepo');
+    const fi = document.getElementById('footerIssues');
+    if (fr) { fr.href = base; }
+    if (fi) { fi.href = base + '/issues'; }
+
+    function wireCopy(btn, textGetter) {
+      if (!btn) return;
+      btn.addEventListener('click', function () { copyCmd(btn, textGetter()); });
+    }
+    wireCopy(document.getElementById('copyBtnWindows'), function () { return document.getElementById('cmdTextWindows').textContent; });
+    wireCopy(document.getElementById('copyBtnMacos'),  function () { return document.getElementById('cmdTextMacos').textContent; });
+    wireCopy(document.getElementById('copyBtnLinux'),  function () { return document.getElementById('cmdTextLinux').textContent; });
+  }
+
+  // ── Detección automática del OS ─────────────────────────────────────────────
+  function detectOS() {
+    const ua = navigator.userAgent.toLowerCase();
+    const platform = (navigator.platform || '').toLowerCase();
+
+    if (platform.includes('win') || ua.includes('windows')) return 'windows';
+    if (platform.includes('mac') || ua.includes('macintosh') || ua.includes('mac os')) return 'macos';
+    if (ua.includes('linux') || ua.includes('ubuntu') || ua.includes('debian')) return 'linux';
+
+    // Fallback: intentar con userAgentData si está disponible
+    if (navigator.userAgentData) {
+      const p = navigator.userAgentData.platform.toLowerCase();
+      if (p.includes('windows')) return 'windows';
+      if (p.includes('mac'))     return 'macos';
+      if (p.includes('linux'))   return 'linux';
+    }
+
+    return 'linux'; // fallback
+  }
+
+  function selectOS(os, auto = false) {
+    // Actualizar tabs
+    document.querySelectorAll('.os-tab').forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    const tab = document.getElementById('tab-' + os);
+    if (tab) { tab.classList.add('active'); tab.setAttribute('aria-selected', 'true'); }
+
+    // Actualizar paneles
+    document.querySelectorAll('.os-panel').forEach(p => p.classList.remove('active'));
+    const panel = document.getElementById('panel-' + os);
+    if (panel) panel.classList.add('active');
+
+    // Banner de auto-detección
+    const banner = document.getElementById('autoBanner');
+    const msg    = document.getElementById('autoMsg');
+    if (auto) {
+      const names = { windows: 'Windows', macos: 'macOS', linux: 'Linux' };
+      msg.textContent = `✓ ${names[os]} detectado automáticamente — mostrando el comando correcto`;
+      banner.style.display = 'flex';
+    }
+  }
+
+  // ── Copiar al portapapeles ───────────────────────────────────────────────────
+  function copyCmd(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg> ¡Copiado!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // ── Init ─────────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    applyGithubLinks();
+    const os = detectOS();
+    selectOS(os, true);
+  });
+</script>
+</body>
+</html>
