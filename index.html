@@ -8,568 +8,616 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:        #0a0c10;
-    --surface:   #111318;
-    --border:    #1e2330;
-    --accent:    #00e5ff;
-    --accent2:   #7c4dff;
-    --green:     #00e676;
-    --red:       #ff5252;
-    --yellow:    #ffd740;
-    --text:      #e8eaf0;
-    --muted:     #6b7280;
-    --code-bg:   #0d1117;
+    --bg:      #0a0c10;
+    --surface: #111318;
+    --border:  #1e2330;
+    --accent:  #00e5ff;
+    --green:   #00e676;
+    --red:     #ff5252;
+    --yellow:  #ffd740;
+    --text:    #e8eaf0;
+    --muted:   #6b7280;
+    --code-bg: #0d1117;
   }
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
+  body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; min-height:100vh; overflow-x:hidden; }
+  body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px); background-size:40px 40px; opacity:.3; pointer-events:none; z-index:0; }
+  .orb { position:fixed; border-radius:50%; filter:blur(120px); pointer-events:none; z-index:0; }
+  .orb-1 { width:500px;height:500px;background:radial-gradient(circle,rgba(0,229,255,.1),transparent 70%);top:-100px;left:-100px;animation:drift 12s ease-in-out infinite alternate; }
+  .orb-2 { width:400px;height:400px;background:radial-gradient(circle,rgba(124,77,255,.08),transparent 70%);bottom:0;right:-80px;animation:drift 16s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { from{transform:translate(0,0)} to{transform:translate(40px,30px)} }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+  @keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  /* ── Top Nav ── */
+  .top-nav { position:sticky;top:0;z-index:100;background:rgba(10,12,16,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:56px; }
+  .nav-logo { font-weight:800;font-size:16px;letter-spacing:-0.02em; }
+  .nav-logo span { color:var(--accent); }
+  .nav-links { display:flex;gap:4px; }
+  .nav-link { padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border:none;background:transparent;transition:all .2s;font-family:'Syne',sans-serif; }
+  .nav-link:hover { color:var(--text);background:var(--border); }
+  .nav-link.active { color:var(--accent);background:rgba(0,229,255,.08); }
+  .nav-ext { display:flex;gap:8px; }
+  .nav-ext a { font-size:12px;color:var(--muted);text-decoration:none;font-family:'JetBrains Mono',monospace;padding:6px 10px;border-radius:6px;border:1px solid var(--border);transition:all .2s; }
+  .nav-ext a:hover { color:var(--accent);border-color:var(--accent); }
 
-  /* ── Grid background ─────────────────────────────────────────── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity: 0.35;
-    pointer-events: none;
-    z-index: 0;
-  }
+  /* ── Pages ── */
+  .page { display:none; }
+  .page.active { display:block; }
+  .container { position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 24px 100px; }
 
-  /* ── Glow orbs ───────────────────────────────────────────────── */
-  .orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(120px);
-    pointer-events: none;
-    z-index: 0;
-  }
-  .orb-1 {
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(0,229,255,.12), transparent 70%);
-    top: -100px; left: -100px;
-    animation: drift 12s ease-in-out infinite alternate;
-  }
-  .orb-2 {
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(124,77,255,.1), transparent 70%);
-    bottom: 0; right: -80px;
-    animation: drift 16s ease-in-out infinite alternate-reverse;
-  }
-  @keyframes drift {
-    from { transform: translate(0, 0); }
-    to   { transform: translate(40px, 30px); }
-  }
+  /* ── Install page ── */
+  header { padding:64px 0 48px;text-align:center; }
+  .badge { display:inline-flex;align-items:center;gap:8px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);border-radius:100px;padding:6px 16px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--accent);letter-spacing:.05em;margin-bottom:32px;animation:fadeDown .6s ease both; }
+  .badge-dot { width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green);animation:pulse 2s ease infinite; }
+  h1 { font-size:clamp(42px,8vw,72px);font-weight:800;line-height:1.05;letter-spacing:-0.03em;animation:fadeDown .6s .1s ease both; }
+  .h1-claw { color:var(--accent); }
+  .tagline { margin-top:20px;font-size:18px;color:var(--muted);max-width:480px;margin-left:auto;margin-right:auto;line-height:1.6;animation:fadeDown .6s .2s ease both; }
+  .os-detect-section { margin-top:52px;animation:fadeUp .7s .3s ease both; }
+  .auto-banner { display:flex;align-items:center;gap:10px;background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);border-radius:8px;padding:10px 16px;margin-bottom:20px;font-size:13px;color:var(--green);font-family:'JetBrains Mono',monospace; }
+  .os-tabs { display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px 12px 0 0;padding:6px;border-bottom:none; }
+  .os-tab { flex:1;padding:10px 8px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap; }
+  .os-tab:hover { color:var(--text);background:var(--border); }
+  .os-tab.active { background:rgba(0,229,255,.1);color:var(--accent);box-shadow:0 0 0 1px rgba(0,229,255,.2) inset; }
+  .install-box { background:var(--code-bg);border:1px solid var(--border);border-radius:0 0 12px 12px;padding:28px 24px; }
+  .os-panel { display:none; }
+  .os-panel.active { display:block; }
+  .cmd-label { font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px; }
+  .cmd-block { position:relative;background:#060810;border:1px solid var(--border);border-radius:8px;padding:18px 60px 18px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);line-height:1.6;word-break:break-all;cursor:text;user-select:all; }
+  .cmd-block .prompt { color:var(--muted);user-select:none; }
+  .copy-btn { position:absolute;top:50%;right:12px;transform:translateY(-50%);background:var(--border);border:none;border-radius:6px;color:var(--muted);padding:6px 8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px;font-size:11px;font-family:'JetBrains Mono',monospace; }
+  .copy-btn:hover { background:rgba(0,229,255,.15);color:var(--accent); }
+  .copy-btn.copied { background:rgba(0,230,118,.15);color:var(--green); }
+  .os-note { margin-top:16px;padding:14px 16px;background:rgba(255,215,64,.05);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;font-size:13px;color:#b0a070;line-height:1.6; }
+  .os-note strong { color:var(--yellow); }
+  .os-note a { color:var(--accent);text-decoration:none; }
+  .steps-section { margin-top:64px;animation:fadeUp .7s .5s ease both; }
+  .section-title { font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:24px;font-family:'JetBrains Mono',monospace; }
+  .steps { display:flex;flex-direction:column;gap:2px; }
+  .step { display:flex;gap:20px;align-items:flex-start;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:4px;transition:border-color .2s; }
+  .step:first-child { border-radius:10px 10px 4px 4px; }
+  .step:last-child  { border-radius:4px 4px 10px 10px; }
+  .step:hover { border-color:rgba(0,229,255,.3); }
+  .step-num { flex-shrink:0;width:32px;height:32px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);background:rgba(0,229,255,.06); }
+  .step-content h3 { font-size:15px;font-weight:700;margin-bottom:4px; }
+  .step-content p  { font-size:13px;color:var(--muted);line-height:1.6; }
+  .step-content code { font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--border);padding:2px 6px;border-radius:4px;color:var(--accent); }
 
-  /* ── Layout ──────────────────────────────────────────────────── */
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
-  }
+  /* ── Docs page ── */
+  .docs-layout { display:flex;gap:0;margin-top:40px; }
+  .docs-sidebar { width:220px;flex-shrink:0;border:1px solid var(--border);border-radius:12px 0 0 12px;background:var(--surface);padding:12px;position:sticky;top:72px;height:fit-content; }
+  .sidebar-group-title { font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:8px 8px 6px;font-family:'JetBrains Mono',monospace; }
+  .sidebar-link { display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;font-size:13px;color:var(--muted);cursor:pointer;border:none;background:transparent;width:100%;text-align:left;transition:all .15s;font-family:'Syne',sans-serif;font-weight:700; }
+  .sidebar-link:hover  { color:var(--text);background:var(--border); }
+  .sidebar-link.active { color:var(--accent);background:rgba(0,229,255,.08); }
+  .sidebar-sep { height:1px;background:var(--border);margin:8px 0; }
+  .docs-content { flex:1;border:1px solid var(--border);border-left:none;border-radius:0 12px 12px 0;background:var(--code-bg);padding:36px 40px;min-height:600px; }
+  .doc-section { display:none; }
+  .doc-section.active { display:block; }
 
-  /* ── Header ──────────────────────────────────────────────────── */
-  header {
-    padding: 60px 0 48px;
-    text-align: center;
-  }
+  /* Doc typography */
+  .doc-h1  { font-size:24px;font-weight:800;margin-bottom:8px;letter-spacing:-0.02em; }
+  .doc-h2  { font-size:16px;font-weight:800;margin:32px 0 12px;display:flex;align-items:center;gap:8px; }
+  .doc-h2::before { content:'';display:block;width:3px;height:16px;background:var(--accent);border-radius:2px; }
+  .doc-h3  { font-size:12px;font-weight:700;margin:20px 0 8px;color:var(--accent);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em; }
+  .doc-p   { font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px; }
+  .doc-lead { font-size:15px;color:#9ca3af;line-height:1.7;margin-bottom:24px; }
 
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0,229,255,.08);
-    border: 1px solid rgba(0,229,255,.2);
-    border-radius: 100px;
-    padding: 6px 16px;
-    font-size: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--accent);
-    letter-spacing: 0.05em;
-    margin-bottom: 32px;
-    animation: fadeDown .6s ease both;
-  }
-  .badge-dot {
-    width: 6px; height: 6px;
-    background: var(--green);
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--green);
-    animation: pulse 2s ease infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .doc-code-block { background:#060810;border:1px solid var(--border);border-radius:8px;margin:12px 0 20px;overflow:hidden; }
+  .doc-code-header { display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.06em; }
+  .doc-code-body { padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;color:var(--accent);overflow-x:auto;white-space:pre; }
+  .doc-code-body .cm { color:#4b5563; }
+  .doc-code-body .kw { color:#c084fc; }
+  .doc-code-body .st { color:var(--green); }
+  .doc-code-body .nm { color:var(--yellow); }
+  .doc-copy-btn { background:transparent;border:1px solid var(--border);border-radius:4px;color:var(--muted);padding:3px 8px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;transition:all .2s; }
+  .doc-copy-btn:hover { color:var(--accent);border-color:var(--accent); }
+  .doc-copy-btn.copied { color:var(--green);border-color:var(--green); }
 
-  h1 {
-    font-size: clamp(42px, 8vw, 72px);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-    animation: fadeDown .6s .1s ease both;
-  }
-  .h1-claw { color: var(--accent); }
-  .h1-open { color: var(--text); }
+  .doc-alert { padding:14px 16px;border-radius:8px;font-size:13px;line-height:1.7;margin:12px 0 20px; }
+  .doc-alert.warn  { background:rgba(255,215,64,.06);border-left:3px solid var(--yellow);color:#b0a070; }
+  .doc-alert.info  { background:rgba(0,229,255,.05);border-left:3px solid var(--accent);color:#6bbfcc; }
+  .doc-alert.error { background:rgba(255,82,82,.06);border-left:3px solid var(--red);color:#c07070; }
+  .doc-alert.ok    { background:rgba(0,230,118,.05);border-left:3px solid var(--green);color:#60a878; }
+  .doc-alert strong { filter:brightness(1.4); }
+  .doc-alert code, .doc-p code { background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent); }
 
-  .tagline {
-    margin-top: 20px;
-    font-size: 18px;
-    color: var(--muted);
-    font-weight: 400;
-    max-width: 480px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
-    animation: fadeDown .6s .2s ease both;
-  }
+  .doc-table { width:100%;border-collapse:collapse;margin:12px 0 20px;font-size:13px; }
+  .doc-table th { text-align:left;padding:10px 14px;background:rgba(255,255,255,.04);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border); }
+  .doc-table td { padding:10px 14px;border-bottom:1px solid rgba(30,35,48,.8);color:#9ca3af;line-height:1.6;vertical-align:top; }
+  .doc-table td code { font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);background:rgba(0,229,255,.07);padding:2px 6px;border-radius:3px; }
+  .doc-table tr:last-child td { border-bottom:none; }
 
-  @keyframes fadeDown {
-    from { opacity:0; transform:translateY(-16px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
+  .os-pills { display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap; }
+  .os-pill { padding:4px 12px;border-radius:100px;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s; }
+  .os-pill:hover  { border-color:var(--accent);color:var(--accent); }
+  .os-pill.active { background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.4);color:var(--accent); }
+  .os-block { display:none; }
+  .os-block.active { display:block; }
 
-  /* ── OS Detector ─────────────────────────────────────────────── */
-  .os-detect-section {
-    margin-top: 52px;
-    animation: fadeUp .7s .3s ease both;
-  }
-  @keyframes fadeUp {
-    from { opacity:0; transform:translateY(20px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
-
-  .os-tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px 12px 0 0;
-    padding: 6px;
-    border-bottom: none;
-  }
-
-  .os-tab {
-    flex: 1;
-    padding: 10px 8px;
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all .2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    white-space: nowrap;
-  }
-  .os-tab:hover { color: var(--text); background: var(--border); }
-  .os-tab.active {
-    background: rgba(0,229,255,.1);
-    color: var(--accent);
-    box-shadow: 0 0 0 1px rgba(0,229,255,.2) inset;
-  }
-  .os-tab svg { flex-shrink: 0; }
-
-  .install-box {
-    background: var(--code-bg);
-    border: 1px solid var(--border);
-    border-radius: 0 0 12px 12px;
-    padding: 28px 24px;
-  }
-
-  .os-panel { display: none; }
-  .os-panel.active { display: block; }
-
-  .cmd-label {
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--muted);
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .cmd-block {
-    position: relative;
-    background: #060810;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 18px 56px 18px 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--accent);
-    line-height: 1.6;
-    word-break: break-all;
-    cursor: text;
-    user-select: all;
-  }
-  .cmd-block .prompt { color: var(--muted); user-select: none; }
-
-  .copy-btn {
-    position: absolute;
-    top: 50%;
-    right: 12px;
-    transform: translateY(-50%);
-    background: var(--border);
-    border: none;
-    border-radius: 6px;
-    color: var(--muted);
-    padding: 6px 8px;
-    cursor: pointer;
-    transition: all .2s;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .copy-btn:hover { background: rgba(0,229,255,.15); color: var(--accent); }
-  .copy-btn.copied { background: rgba(0,230,118,.15); color: var(--green); }
-
-  .os-note {
-    margin-top: 16px;
-    padding: 14px 16px;
-    background: rgba(255,215,64,.05);
-    border-left: 3px solid var(--yellow);
-    border-radius: 0 8px 8px 0;
-    font-size: 13px;
-    color: #b0a070;
-    line-height: 1.6;
-  }
-  .os-note strong { color: var(--yellow); }
-  .os-note a { color: var(--accent); text-decoration: none; }
-  .os-note a:hover { text-decoration: underline; }
-
-  /* ── Auto-detect banner ───────────────────────────────────────── */
-  .auto-banner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(0,230,118,.06);
-    border: 1px solid rgba(0,230,118,.2);
-    border-radius: 8px;
-    padding: 10px 16px;
-    margin-bottom: 20px;
-    font-size: 13px;
-    color: var(--green);
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  /* ── Steps ───────────────────────────────────────────────────── */
-  .steps-section {
-    margin-top: 64px;
-    animation: fadeUp .7s .5s ease both;
-  }
-  .section-title {
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    color: var(--muted);
-    margin-bottom: 24px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .steps {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .step {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    padding: 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    transition: border-color .2s;
-  }
-  .step:first-child { border-radius: 10px 10px 4px 4px; }
-  .step:last-child  { border-radius: 4px 4px 10px 10px; }
-  .step:hover { border-color: rgba(0,229,255,.3); }
-
-  .step-num {
-    flex-shrink: 0;
-    width: 32px; height: 32px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--accent);
-    background: rgba(0,229,255,.06);
-  }
-  .step-content h3 {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .step-content p {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-  .step-content code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    background: var(--border);
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: var(--accent);
-  }
-
-  /* ── Footer ──────────────────────────────────────────────────── */
-  footer {
-    margin-top: 80px;
-    padding-top: 32px;
-    border-top: 1px solid var(--border);
-    text-align: center;
-    font-size: 13px;
-    color: var(--muted);
-    animation: fadeUp .7s .7s ease both;
-  }
-  footer a { color: var(--accent); text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
-  .footer-heart { color: var(--red); }
+  footer { margin-top:80px;padding-top:32px;border-top:1px solid var(--border);text-align:center;font-size:13px;color:var(--muted); }
+  footer a { color:var(--accent);text-decoration:none; }
+  .footer-heart { color:var(--red); }
 </style>
 </head>
 <body>
-
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 
-<div class="container">
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="nav-logo">Open<span>Claw</span></div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showPage('install')">Instalador</button>
+    <button class="nav-link"        onclick="showPage('docs')">Documentación</button>
+  </div>
+  <div class="nav-ext">
+    <a href="https://openclaw.ai/" target="_blank">🦞 openclaw.ai</a>
+    <a href="https://github.com/nexxoads/openclaw-easy-install" target="_blank">GitHub</a>
+  </div>
+</nav>
 
-  <!-- Header -->
+<!-- ═══════════════════  PAGE: INSTALADOR  ═══════════════════ -->
+<div class="page active" id="page-install">
+<div class="container">
   <header>
-    <div class="badge">
-      <span class="badge-dot"></span>
-      Proyecto comunitario · Código abierto · Gratis
-    </div>
-    <h1>
-      <span class="h1-open">Open</span><span class="h1-claw">Claw</span>
-    </h1>
-    <p class="tagline">
-      Instala <a href="https://openclaw.ai/" target="_blank" style="color:var(--accent);text-decoration:none;">OpenClaw</a> en tu máquina local con un solo comando.<br>
-      Sin tocar archivos. Sin conocimientos de Docker.
-    </p>
+    <div class="badge"><span class="badge-dot"></span>Proyecto comunitario · Código abierto · Gratis</div>
+    <h1><span>Open</span><span class="h1-claw">Claw</span></h1>
+    <p class="tagline">Instala <a href="https://openclaw.ai/" target="_blank" style="color:var(--accent);text-decoration:none;">OpenClaw</a> en tu máquina local con un solo comando.<br>Sin tocar archivos. Sin conocimientos de Docker.</p>
   </header>
 
-  <!-- OS Detector + Install Command -->
   <section class="os-detect-section">
-
     <div id="autoBanner" class="auto-banner" style="display:none;">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span id="autoMsg">Sistema detectado automáticamente</span>
+      <span id="autoMsg"></span>
     </div>
-
-    <div class="os-tabs" role="tablist">
-
-      <button class="os-tab" id="tab-windows" role="tab" onclick="selectOS('windows')" aria-selected="false">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M3 5.5L11 4v7.5H3V5.5zm9-1.7L21 2v9.5h-9V3.8zm-9 8.2h8V19L3 17.7v-5.7zm9 .2h9V22l-9-1.5v-8.3z"/>
-        </svg>
-        Windows
-      </button>
-
-      <button class="os-tab" id="tab-macos" role="tab" onclick="selectOS('macos')" aria-selected="false">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M18.7 17.6c-.4.9-.6 1.3-1.1 2.1-.7 1.1-1.7 2.4-3 2.4-1.1.1-1.4-.7-2.9-.7s-1.9.8-3 .7c-1.2-.1-2.2-1.3-2.9-2.4-2-2.9-2.2-6.3-1-8.1.9-1.3 2.2-2 3.5-2 1.3 0 2.1.7 3.2.7 1.1 0 1.7-.7 3.2-.7 1.1 0 2.3.6 3.1 1.7-2.7 1.5-2.3 5.3.9 6.3zm-4-13.1c.7-.8 1.1-2 .9-3.1-1 .1-2.2.7-2.9 1.5-.6.8-1.1 2-.9 3.1 1.1.1 2.2-.5 2.9-1.5z"/>
-        </svg>
-        macOS
-      </button>
-
-      <button class="os-tab" id="tab-linux" role="tab" onclick="selectOS('linux')" aria-selected="false">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C8.3 2 5 5.8 5 10c0 2.4.9 4.5 2.3 6-.3.7-.7 1.4-1.1 1.9-.4.5-.2 1.2.4 1.4.1 0 .3.1.4.1.5 0 .9-.2 1.2-.5.3-.3.5-.6.8-1 .9.4 1.9.6 3 .6s2.1-.2 3-.6c.3.4.5.7.8 1 .3.3.7.5 1.2.5.1 0 .3 0 .4-.1.6-.2.8-.9.4-1.4-.4-.5-.8-1.2-1.1-1.9C18.1 14.5 19 12.4 19 10c0-4.2-3.3-8-7-8zm-2.5 9.5c-.6 0-1-.5-1-1.2s.4-1.2 1-1.2 1 .5 1 1.2-.4 1.2-1 1.2zm5 0c-.6 0-1-.5-1-1.2s.4-1.2 1-1.2 1 .5 1 1.2-.4 1.2-1 1.2z"/>
-        </svg>
-        Linux
-      </button>
-
+    <div class="os-tabs">
+      <button class="os-tab" id="tab-windows" onclick="selectOS('windows')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5L11 4v7.5H3V5.5zm9-1.7L21 2v9.5h-9V3.8zm-9 8.2h8V19L3 17.7v-5.7zm9 .2h9V22l-9-1.5v-8.3z"/></svg>Windows</button>
+      <button class="os-tab" id="tab-macos"   onclick="selectOS('macos')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.7 17.6c-.4.9-.6 1.3-1.1 2.1-.7 1.1-1.7 2.4-3 2.4-1.1.1-1.4-.7-2.9-.7s-1.9.8-3 .7c-1.2-.1-2.2-1.3-2.9-2.4-2-2.9-2.2-6.3-1-8.1.9-1.3 2.2-2 3.5-2 1.3 0 2.1.7 3.2.7 1.1 0 1.7-.7 3.2-.7 1.1 0 2.3.6 3.1 1.7-2.7 1.5-2.3 5.3.9 6.3zm-4-13.1c.7-.8 1.1-2 .9-3.1-1 .1-2.2.7-2.9 1.5-.6.8-1.1 2-.9 3.1 1.1.1 2.2-.5 2.9-1.5z"/></svg>macOS</button>
+      <button class="os-tab" id="tab-linux"   onclick="selectOS('linux')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.3 2 5 5.8 5 10c0 2.4.9 4.5 2.3 6-.3.7-.7 1.4-1.1 1.9-.4.5-.2 1.2.4 1.4.1 0 .3.1.4.1.5 0 .9-.2 1.2-.5.3-.3.5-.6.8-1 .9.4 1.9.6 3 .6s2.1-.2 3-.6c.3.4.5.7.8 1 .3.3.7.5 1.2.5.1 0 .3 0 .4-.1.6-.2.8-.9.4-1.4-.4-.5-.8-1.2-1.1-1.9C18.1 14.5 19 12.4 19 10c0-4.2-3.3-8-7-8zm-2.5 9.5c-.6 0-1-.5-1-1.2s.4-1.2 1-1.2 1 .5 1 1.2-.4 1.2-1 1.2zm5 0c-.6 0-1-.5-1-1.2s.4-1.2 1-1.2 1 .5 1 1.2-.4 1.2-1 1.2z"/></svg>Linux</button>
     </div>
-
     <div class="install-box">
-
-      <!-- Windows -->
       <div class="os-panel" id="panel-windows">
         <div class="cmd-label">// PowerShell (como Administrador)</div>
-        <div class="cmd-block">
-          <span class="prompt">PS C:\&gt; </span>irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.ps1 | iex
-          <button class="copy-btn" onclick="copyCmd(this, 'irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.ps1 | iex')">
-            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            Copiar
-          </button>
-        </div>
-        <div class="os-note">
-          <strong>Requisito:</strong> Tener <a href="https://docs.docker.com/desktop/install/windows-install/" target="_blank">Docker Desktop</a> instalado y abierto.<br>
-          <strong>WSL2 (recomendado):</strong> Si usas WSL2, abre tu terminal de Ubuntu/Debian y usa el comando de Linux.
-        </div>
+        <div class="cmd-block"><span class="prompt">PS C:\&gt; </span>irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.ps1 | iex<button class="copy-btn" onclick="copyCmd(this,'irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.ps1 | iex')"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar</button></div>
+        <div class="os-note"><strong>Requisito:</strong> <a href="https://docs.docker.com/desktop/install/windows-install/" target="_blank">Docker Desktop</a> instalado y abierto.<br><strong>WSL2:</strong> Si usas WSL2, abre Ubuntu/Debian y usa el comando de Linux.</div>
       </div>
-
-      <!-- macOS -->
       <div class="os-panel" id="panel-macos">
         <div class="cmd-label">// Terminal</div>
-        <div class="cmd-block">
-          <span class="prompt">$ </span>curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash
-          <button class="copy-btn" onclick="copyCmd(this, 'curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash')">
-            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            Copiar
-          </button>
-        </div>
-        <div class="os-note">
-          <strong>Requisito:</strong> Tener <a href="https://docs.docker.com/desktop/install/mac-install/" target="_blank">Docker Desktop para Mac</a> instalado y en marcha (icono de la ballena en la barra de menú).
-        </div>
+        <div class="cmd-block"><span class="prompt">$ </span>curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash<button class="copy-btn" onclick="copyCmd(this,'curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash')"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar</button></div>
+        <div class="os-note"><strong>Requisito:</strong> <a href="https://docs.docker.com/desktop/install/mac-install/" target="_blank">Docker Desktop para Mac</a> instalado y en marcha.</div>
       </div>
-
-      <!-- Linux -->
       <div class="os-panel" id="panel-linux">
         <div class="cmd-label">// Terminal (Ubuntu / Debian / WSL2)</div>
-        <div class="cmd-block">
-          <span class="prompt">$ </span>curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash
-          <button class="copy-btn" onclick="copyCmd(this, 'curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash')">
-            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            Copiar
-          </button>
-        </div>
-        <div class="os-note">
-          <strong>Requisito:</strong> Tener <a href="https://docs.docker.com/engine/install/ubuntu/" target="_blank">Docker instalado</a>.<br>
-          Si no tienes Docker: <code>curl -fsSL https://get.docker.com | sh</code>
-        </div>
+        <div class="cmd-block"><span class="prompt">$ </span>curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash<button class="copy-btn" onclick="copyCmd(this,'curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash')"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar</button></div>
+        <div class="os-note"><strong>Sin Docker:</strong> <code>curl -fsSL https://get.docker.com | sh</code></div>
       </div>
-
     </div>
   </section>
 
-  <!-- Steps -->
   <section class="steps-section">
     <div class="section-title">// ¿Qué hace el instalador?</div>
     <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-content">
-          <h3>Detecta tu entorno</h3>
-          <p>Comprueba automáticamente que Docker está instalado y en marcha. Si no lo está, te indica exactamente dónde descargarlo para tu sistema.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-content">
-          <h3>Crea la carpeta de datos</h3>
-          <p>Genera <code>~/openclaw-local/</code> con todos los archivos de configuración necesarios. Tus datos siempre quedan en tu máquina.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-content">
-          <h3>Descarga la imagen oficial</h3>
-          <p>Hace <code>docker pull</code> de la imagen <code>ghcr.io/openclaw/openclaw:latest</code> desde el GitHub Container Registry oficial de <a href="https://openclaw.ai/" target="_blank" style="color:var(--accent);text-decoration:none;">openclaw.ai</a>.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">04</div>
-        <div class="step-content">
-          <h3>Arranca el contenedor</h3>
-          <p>Lanza OpenClaw con <code>restart: unless-stopped</code> — se vuelve a encender solo cada vez que reinicias el ordenador.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">05</div>
-        <div class="step-content">
-          <h3>Muestra los siguientes pasos</h3>
-          <p>Al terminar, aparecen todos los comandos que necesitas: configuración inicial, ver logs, parar, reiniciar y desinstalar.</p>
-        </div>
-      </div>
+      <div class="step"><div class="step-num">01</div><div class="step-content"><h3>Detecta tu entorno</h3><p>Identifica macOS / Linux / WSL2 / Apple Silicon, verifica Docker instalado y en marcha.</p></div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-content"><h3>Crea la carpeta de datos</h3><p>Genera <code>~/openclaw-local/</code> con <code>.env</code>, <code>docker-compose.yml</code> y la carpeta <code>data/</code>.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-content"><h3>Genera token de seguridad</h3><p>Crea automáticamente un token aleatorio con <code>openssl rand -hex 32</code> y lo guarda en <code>.env</code>.</p></div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-content"><h3>Descarga la imagen oficial</h3><p>Hace <code>docker pull ghcr.io/openclaw/openclaw:latest</code> desde el GitHub Container Registry oficial.</p></div></div>
+      <div class="step"><div class="step-num">05</div><div class="step-content"><h3>Arranca y verifica</h3><p>Lanza el contenedor con <code>restart: unless-stopped</code> y hace polling a <code>/healthz</code> hasta confirmar que responde.</p></div></div>
     </div>
   </section>
 
-  <!-- Footer -->
   <footer>
-    <p>Hecho con <span class="footer-heart">♥</span> para la comunidad · No oficial · Sin afiliación con los autores de OpenClaw</p>
-    <p style="margin-top:8px;">
-      <a href="https://github.com/nexxoads/openclaw-easy-install" target="_blank">GitHub</a>
-      &nbsp;·&nbsp;
-      <a href="https://github.com/nexxoads/openclaw-easy-install/issues" target="_blank">Reportar un problema</a>
-    </p>
+    <p>Hecho con <span class="footer-heart">♥</span> para la comunidad · No oficial · <a href="https://openclaw.ai/" target="_blank">openclaw.ai</a></p>
+    <p style="margin-top:8px;"><a href="https://github.com/nexxoads/openclaw-easy-install" target="_blank">GitHub del instalador</a> &nbsp;·&nbsp; <a href="https://github.com/nexxoads/openclaw-easy-install/issues" target="_blank">Reportar problema</a> &nbsp;·&nbsp; <a href="https://docs.openclaw.ai" target="_blank">Docs oficiales</a></p>
   </footer>
+</div>
+</div>
 
+<!-- ═══════════════════  PAGE: DOCS  ═══════════════════ -->
+<div class="page" id="page-docs">
+<div class="container">
+  <div class="docs-layout">
+
+    <!-- Sidebar -->
+    <aside class="docs-sidebar">
+      <div class="sidebar-group-title">Inicio</div>
+      <button class="sidebar-link active" onclick="showDoc('inicio')">🦞 Introducción</button>
+      <button class="sidebar-link"        onclick="showDoc('requisitos')">📋 Requisitos</button>
+      <div class="sidebar-sep"></div>
+      <div class="sidebar-group-title">Instalación</div>
+      <button class="sidebar-link" onclick="showDoc('instalar')">⚡ Instalar</button>
+      <button class="sidebar-link" onclick="showDoc('primer-uso')">🚀 Primer uso</button>
+      <button class="sidebar-link" onclick="showDoc('actualizar')">🔄 Actualizar</button>
+      <div class="sidebar-sep"></div>
+      <div class="sidebar-group-title">Gestión</div>
+      <button class="sidebar-link" onclick="showDoc('comandos')">💻 Comandos Docker</button>
+      <button class="sidebar-link" onclick="showDoc('configuracion')">⚙️ Configuración</button>
+      <button class="sidebar-link" onclick="showDoc('desinstalar')">🗑️ Desinstalar</button>
+      <div class="sidebar-sep"></div>
+      <div class="sidebar-group-title">Ayuda</div>
+      <button class="sidebar-link" onclick="showDoc('errores')">🐛 Errores comunes</button>
+      <button class="sidebar-link" onclick="showDoc('reinstalar')">♻️ Reinstalación limpia</button>
+    </aside>
+
+    <!-- Content -->
+    <main class="docs-content">
+
+      <!-- INICIO -->
+      <div class="doc-section active" id="doc-inicio">
+        <div class="doc-h1">🦞 OpenClaw — Guía Comunitaria</div>
+        <p class="doc-lead">Guía completa para instalar, configurar y gestionar OpenClaw con Docker desde cero. Sin conocimientos previos necesarios.</p>
+        <div class="doc-alert info"><strong>¿Qué es OpenClaw?</strong> Tu asistente de IA personal que corre en tu propia máquina. Se conecta a WhatsApp, Telegram, Discord y más. 100% open source en <a href="https://github.com/openclaw/openclaw" target="_blank" style="color:var(--accent)">github.com/openclaw/openclaw</a>.</div>
+        <div class="doc-h2">¿Qué necesitas?</div>
+        <table class="doc-table">
+          <tr><th>Requisito</th><th>Detalle</th></tr>
+          <tr><td><code>Docker Desktop</code></td><td>La única dependencia. Instálalo y listo.</td></tr>
+          <tr><td>Sistema operativo</td><td>macOS, Windows (WSL2) o Linux (Ubuntu/Debian)</td></tr>
+          <tr><td>RAM mínima</td><td>2 GB libres recomendados</td></tr>
+          <tr><td>Espacio en disco</td><td>~1 GB para la imagen Docker</td></tr>
+        </table>
+        <div class="doc-h2">Estructura de carpetas tras la instalación</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>ÁRBOL DE ARCHIVOS</span></div><div class="doc-code-body"><span class="cm">~/openclaw-local/</span>
+├── <span class="nm">docker-compose.yml</span>   <span class="cm"># configuración del contenedor</span>
+├── <span class="nm">.env</span>                 <span class="cm"># token y variables de entorno</span>
+└── <span class="nm">data/</span>                <span class="cm"># tus datos (persistentes)</span>
+    ├── <span class="nm">openclaw.json</span>    <span class="cm"># configuración de OpenClaw</span>
+    └── <span class="nm">workspace/</span>       <span class="cm"># archivos y proyectos de agentes</span></div></div>
+      </div>
+
+      <!-- REQUISITOS -->
+      <div class="doc-section" id="doc-requisitos">
+        <div class="doc-h1">📋 Requisitos previos</div>
+        <p class="doc-lead">Solo necesitas Docker Desktop. Elige tu sistema:</p>
+        <div class="os-pills">
+          <button class="os-pill active" onclick="switchPills('req','macos',this)">macOS</button>
+          <button class="os-pill"        onclick="switchPills('req','windows',this)">Windows</button>
+          <button class="os-pill"        onclick="switchPills('req','linux',this)">Linux / WSL2</button>
+        </div>
+        <div class="os-block active" id="req-macos">
+          <div class="doc-h2">Docker Desktop para macOS</div>
+          <p class="doc-p">Descarga desde <a href="https://docs.docker.com/desktop/install/mac-install/" target="_blank" style="color:var(--accent)">docs.docker.com</a>. Hay versión para Apple Silicon (M1/M2/M3) e Intel.</p>
+          <div class="doc-code-block"><div class="doc-code-header"><span>VERIFICAR INSTALACIÓN</span><button class="doc-copy-btn" onclick="docCopy(this,'docker --version && docker compose version')">Copiar</button></div><div class="doc-code-body">docker --version
+docker compose version</div></div>
+          <div class="doc-alert ok">Ambos deben responder con versión. El icono 🐳 en la barra de menú debe estar quieto (no animándose).</div>
+        </div>
+        <div class="os-block" id="req-windows">
+          <div class="doc-h2">Docker Desktop para Windows</div>
+          <p class="doc-p">Descarga desde <a href="https://docs.docker.com/desktop/install/windows-install/" target="_blank" style="color:var(--accent)">docs.docker.com</a>. Durante la instalación activa <strong>"Use WSL 2 instead of Hyper-V"</strong>.</p>
+          <div class="doc-alert warn"><strong>Recomendado:</strong> Usa WSL2 (Ubuntu) en lugar de PowerShell nativo para mejor compatibilidad.</div>
+          <div class="doc-h3">Instalar WSL2 si no lo tienes</div>
+          <div class="doc-code-block"><div class="doc-code-header"><span>POWERSHELL (Administrador)</span><button class="doc-copy-btn" onclick="docCopy(this,'wsl --install')">Copiar</button></div><div class="doc-code-body">wsl --install</div></div>
+          <p class="doc-p">Reinicia el PC. Luego en Docker Desktop: <strong>Settings → Resources → WSL Integration</strong> → activa Ubuntu → Apply & Restart.</p>
+        </div>
+        <div class="os-block" id="req-linux">
+          <div class="doc-h2">Docker en Linux / WSL2</div>
+          <div class="doc-code-block"><div class="doc-code-header"><span>INSTALAR DOCKER (Ubuntu/Debian)</span><button class="doc-copy-btn" onclick="docCopy(this,'curl -fsSL https://get.docker.com | sh\nsudo usermod -aG docker $USER\nnewgrp docker')">Copiar</button></div><div class="doc-code-body">curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+newgrp docker</div></div>
+          <div class="doc-code-block"><div class="doc-code-header"><span>ARRANCAR DOCKER AL INICIO</span><button class="doc-copy-btn" onclick="docCopy(this,'sudo systemctl enable docker\nsudo systemctl start docker')">Copiar</button></div><div class="doc-code-body">sudo systemctl enable docker
+sudo systemctl start docker</div></div>
+        </div>
+      </div>
+
+      <!-- INSTALAR -->
+      <div class="doc-section" id="doc-instalar">
+        <div class="doc-h1">⚡ Instalación</div>
+        <p class="doc-lead">Un solo comando instala y configura todo automáticamente.</p>
+        <div class="doc-h2">macOS y Linux / WSL2</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash')">Copiar</button></div><div class="doc-code-body">curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash</div></div>
+        <div class="doc-h2">Windows (PowerShell nativo)</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>POWERSHELL (Administrador)</span><button class="doc-copy-btn" onclick="docCopy(this,'irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.ps1 | iex')">Copiar</button></div><div class="doc-code-body">irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.ps1 | iex</div></div>
+        <div class="doc-h2">Pasos que ejecuta el script</div>
+        <table class="doc-table">
+          <tr><th>Paso</th><th>Acción</th></tr>
+          <tr><td><code>1</code></td><td>Detecta macOS / Linux / WSL2 / Apple Silicon</td></tr>
+          <tr><td><code>2</code></td><td>Verifica que Docker está instalado y arrancado</td></tr>
+          <tr><td><code>3</code></td><td>Crea <code>~/openclaw-local/data/workspace/</code></td></tr>
+          <tr><td><code>4</code></td><td>Genera token con <code>openssl rand -hex 32</code> → guarda en <code>.env</code></td></tr>
+          <tr><td><code>5</code></td><td>Escribe <code>docker-compose.yml</code> con imagen oficial</td></tr>
+          <tr><td><code>6</code></td><td>Ejecuta <code>docker compose pull</code> (~500 MB la primera vez)</td></tr>
+          <tr><td><code>7</code></td><td>Ejecuta <code>docker compose up -d</code></td></tr>
+          <tr><td><code>8</code></td><td>Hace polling a <code>/healthz</code> y muestra el token al terminar</td></tr>
+        </table>
+      </div>
+
+      <!-- PRIMER USO -->
+      <div class="doc-section" id="doc-primer-uso">
+        <div class="doc-h1">🚀 Primer uso</div>
+        <p class="doc-lead">Sigue estos pasos tras la instalación para configurar OpenClaw por primera vez.</p>
+        <div class="doc-h2">1. Abre el panel de control</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>NAVEGADOR</span><button class="doc-copy-btn" onclick="docCopy(this,'http://127.0.0.1:18789')">Copiar</button></div><div class="doc-code-body">http://127.0.0.1:18789</div></div>
+        <div class="doc-h2">2. Obtén tu token de acceso</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'cat ~/openclaw-local/.env')">Copiar</button></div><div class="doc-code-body">cat ~/openclaw-local/.env</div></div>
+        <p class="doc-p">Copia el valor de <code>OPENCLAW_GATEWAY_TOKEN</code> y pégalo en el campo <strong>Shared Secret</strong> del panel de control.</p>
+        <div class="doc-h2">3. Onboarding inicial (solo una vez)</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'docker exec -it openclaw-local node dist/index.js onboard --mode local --no-install-daemon')">Copiar</button></div><div class="doc-code-body">docker exec -it openclaw-local node dist/index.js onboard --mode local --no-install-daemon</div></div>
+        <p class="doc-p">Te pedirá tu API key del proveedor de IA (Anthropic, OpenAI, etc.) y configurará los canales de mensajería.</p>
+        <div class="doc-h2">4. Verificar que funciona</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'curl -fsS http://127.0.0.1:18789/healthz\ncurl -fsS http://127.0.0.1:18789/readyz')">Copiar</button></div><div class="doc-code-body">curl -fsS http://127.0.0.1:18789/healthz   <span class="cm"># liveness</span>
+curl -fsS http://127.0.0.1:18789/readyz    <span class="cm"># readiness</span></div></div>
+        <div class="doc-alert ok">Si ambos responden, OpenClaw está funcionando correctamente.</div>
+        <div class="doc-h2">5. Conectar un canal de mensajería</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'# Telegram\ndocker exec -it openclaw-local node dist/index.js channels add --channel telegram --token \"TU_TOKEN_BOT\"\n\n# WhatsApp (escanea QR en terminal)\ndocker exec -it openclaw-local node dist/index.js channels login\n\n# Discord\ndocker exec -it openclaw-local node dist/index.js channels add --channel discord --token \"TU_TOKEN\"')">Copiar</button></div><div class="doc-code-body"><span class="cm"># Telegram</span>
+docker exec -it openclaw-local node dist/index.js channels add --channel telegram --token <span class="st">"TU_TOKEN_BOT"</span>
+
+<span class="cm"># WhatsApp (escanea QR en terminal)</span>
+docker exec -it openclaw-local node dist/index.js channels login
+
+<span class="cm"># Discord</span>
+docker exec -it openclaw-local node dist/index.js channels add --channel discord --token <span class="st">"TU_TOKEN"</span></div></div>
+      </div>
+
+      <!-- ACTUALIZAR -->
+      <div class="doc-section" id="doc-actualizar">
+        <div class="doc-h1">🔄 Actualizar</div>
+        <p class="doc-lead">Actualizar a la última versión no borra tus datos. Solo descarga la nueva imagen y reinicia.</p>
+        <div class="doc-h2">Actualización en un comando</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'cd ~/openclaw-local && docker compose pull && docker compose up -d')">Copiar</button></div><div class="doc-code-body">cd ~/openclaw-local && docker compose pull && docker compose up -d</div></div>
+        <div class="doc-alert ok"><strong>Tus datos están a salvo.</strong> El directorio <code>data/</code> nunca se toca durante actualizaciones.</div>
+        <div class="doc-h2">Ver qué versión tienes instalada</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'docker inspect openclaw-local --format \"{{.Config.Image}}\"')">Copiar</button></div><div class="doc-code-body">docker inspect openclaw-local --format "{{.Config.Image}}"</div></div>
+        <div class="doc-h2">Fijar una versión específica</div>
+        <p class="doc-p">Edita <code>OPENCLAW_IMAGE</code> en <code>~/openclaw-local/.env</code>:</p>
+        <div class="doc-code-block"><div class="doc-code-header"><span>.env</span></div><div class="doc-code-body">OPENCLAW_IMAGE=ghcr.io/openclaw/openclaw:<span class="st">2026.2.26</span></div></div>
+        <p class="doc-p">Consulta todas las versiones en <a href="https://github.com/openclaw/openclaw/releases" target="_blank" style="color:var(--accent)">github.com/openclaw/openclaw/releases</a>.</p>
+      </div>
+
+      <!-- COMANDOS -->
+      <div class="doc-section" id="doc-comandos">
+        <div class="doc-h1">💻 Comandos Docker</div>
+        <p class="doc-lead">Referencia completa de todos los comandos que necesitarás.</p>
+        <div class="doc-h2">Estado y monitoreo</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'docker ps                              # contenedores activos\ndocker ps -a                           # todos (incluye parados)\ndocker logs openclaw-local             # últimos logs\ndocker logs -f openclaw-local          # logs en tiempo real\ndocker logs --tail 50 openclaw-local   # últimas 50 líneas\ndocker stats openclaw-local            # CPU y RAM en tiempo real')">Copiar</button></div><div class="doc-code-body">docker ps                              <span class="cm"># contenedores activos</span>
+docker ps -a                           <span class="cm"># todos (incluye parados)</span>
+docker logs openclaw-local             <span class="cm"># últimos logs</span>
+docker logs -f openclaw-local          <span class="cm"># logs en tiempo real</span>
+docker logs --tail 50 openclaw-local   <span class="cm"># últimas 50 líneas</span>
+docker stats openclaw-local            <span class="cm"># CPU y RAM en tiempo real</span></div></div>
+        <div class="doc-h2">Arrancar / Parar / Reiniciar</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'docker start openclaw-local\ndocker stop openclaw-local\ndocker restart openclaw-local')">Copiar</button></div><div class="doc-code-body">docker start openclaw-local     <span class="cm"># arrancar</span>
+docker stop openclaw-local      <span class="cm"># parar (datos seguros)</span>
+docker restart openclaw-local   <span class="cm"># reiniciar</span></div></div>
+        <div class="doc-h2">Docker Compose (desde ~/openclaw-local)</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'cd ~/openclaw-local\ndocker compose up -d      # arrancar en background\ndocker compose down       # parar y eliminar contenedor\ndocker compose pull       # descargar imagen más nueva\ndocker compose ps         # estado de servicios\ndocker compose logs -f    # logs de todos los servicios')">Copiar</button></div><div class="doc-code-body">cd ~/openclaw-local
+docker compose up -d      <span class="cm"># arrancar en background</span>
+docker compose down       <span class="cm"># parar (datos seguros)</span>
+docker compose pull       <span class="cm"># descargar imagen más nueva</span>
+docker compose ps         <span class="cm"># estado de servicios</span>
+docker compose logs -f    <span class="cm"># logs de todos los servicios</span></div></div>
+        <div class="doc-h2">Comandos OpenClaw via docker exec</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'# Onboarding\ndocker exec -it openclaw-local node dist/index.js onboard --mode local --no-install-daemon\n\n# Estado del gateway\ndocker exec -it openclaw-local node dist/index.js gateway status\n\n# Listar canales\ndocker exec -it openclaw-local node dist/index.js channels list\n\n# Shell dentro del contenedor\ndocker exec -it openclaw-local bash')">Copiar</button></div><div class="doc-code-body"><span class="cm"># Onboarding</span>
+docker exec -it openclaw-local node dist/index.js onboard --mode local --no-install-daemon
+
+<span class="cm"># Estado del gateway</span>
+docker exec -it openclaw-local node dist/index.js gateway status
+
+<span class="cm"># Listar canales configurados</span>
+docker exec -it openclaw-local node dist/index.js channels list
+
+<span class="cm"># Shell dentro del contenedor</span>
+docker exec -it openclaw-local bash</div></div>
+      </div>
+
+      <!-- CONFIGURACION -->
+      <div class="doc-section" id="doc-configuracion">
+        <div class="doc-h1">⚙️ Configuración</div>
+        <p class="doc-lead">Variables y archivos clave para personalizar tu instalación.</p>
+        <div class="doc-h2">El archivo .env</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>~/openclaw-local/.env</span></div><div class="doc-code-body"><span class="cm"># Imagen (cambia la versión para fijar una específica)</span>
+<span class="nm">OPENCLAW_IMAGE</span>=ghcr.io/openclaw/openclaw:latest
+
+<span class="cm"># Token de acceso al panel (¡no lo compartas!)</span>
+<span class="nm">OPENCLAW_GATEWAY_TOKEN</span>=<span class="st">tu_token_secreto</span>
+
+<span class="cm"># Rutas de datos (no cambiar salvo que sepas lo que haces)</span>
+<span class="nm">OPENCLAW_CONFIG_DIR</span>=/Users/tuusuario/openclaw-local/data
+<span class="nm">OPENCLAW_WORKSPACE_DIR</span>=/Users/tuusuario/openclaw-local/data/workspace
+
+<span class="cm"># Zona horaria</span>
+<span class="nm">OPENCLAW_TZ</span>=Europe/Madrid</div></div>
+        <div class="doc-h2">Cambiar el puerto</div>
+        <p class="doc-p">Si el puerto <code>18789</code> está ocupado, edita <code>docker-compose.yml</code>:</p>
+        <div class="doc-code-block"><div class="doc-code-header"><span>docker-compose.yml</span></div><div class="doc-code-body">ports:
+  - <span class="st">"18790:18789"</span>   <span class="cm"># puerto_en_tu_maquina:puerto_del_contenedor</span></div></div>
+        <p class="doc-p">Luego reinicia: <code>cd ~/openclaw-local && docker compose up -d</code></p>
+        <div class="doc-h2">Zonas horarias</div>
+        <table class="doc-table">
+          <tr><th>País</th><th>Valor para OPENCLAW_TZ</th></tr>
+          <tr><td>España</td><td><code>Europe/Madrid</code></td></tr>
+          <tr><td>México</td><td><code>America/Mexico_City</code></td></tr>
+          <tr><td>Argentina</td><td><code>America/Argentina/Buenos_Aires</code></td></tr>
+          <tr><td>Colombia</td><td><code>America/Bogota</code></td></tr>
+          <tr><td>Chile</td><td><code>America/Santiago</code></td></tr>
+          <tr><td>UTC</td><td><code>UTC</code></td></tr>
+        </table>
+      </div>
+
+      <!-- DESINSTALAR -->
+      <div class="doc-section" id="doc-desinstalar">
+        <div class="doc-h1">🗑️ Desinstalar</div>
+        <p class="doc-lead">Elimina OpenClaw completamente de tu sistema.</p>
+        <div class="doc-alert warn"><strong>Aviso:</strong> Esto elimina el contenedor, la imagen y todos tus datos en <code>data/</code>. Haz copia de seguridad si los necesitas.</div>
+        <div class="doc-h2">Desinstalador automático</div>
+        <div class="os-pills">
+          <button class="os-pill active" onclick="switchPills('uninstall','mac-linux',this)">macOS / Linux / WSL2</button>
+          <button class="os-pill"        onclick="switchPills('uninstall','windows',this)">Windows</button>
+          <button class="os-pill"        onclick="switchPills('uninstall','manual',this)">Manual</button>
+        </div>
+        <div class="os-block active" id="uninstall-mac-linux">
+          <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/uninstall.sh | bash')">Copiar</button></div><div class="doc-code-body">curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/uninstall.sh | bash</div></div>
+          <p class="doc-p">Pedirá confirmación antes de borrar nada.</p>
+        </div>
+        <div class="os-block" id="uninstall-windows">
+          <div class="doc-code-block"><div class="doc-code-header"><span>POWERSHELL</span><button class="doc-copy-btn" onclick="docCopy(this,'irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/uninstall.ps1 | iex')">Copiar</button></div><div class="doc-code-body">irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/uninstall.ps1 | iex</div></div>
+        </div>
+        <div class="os-block" id="uninstall-manual">
+          <div class="doc-h3">Paso 1 — Parar y eliminar el contenedor</div>
+          <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'docker stop openclaw-local\ndocker rm openclaw-local')">Copiar</button></div><div class="doc-code-body">docker stop openclaw-local
+docker rm openclaw-local</div></div>
+          <div class="doc-h3">Paso 2 — Eliminar la imagen Docker</div>
+          <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'docker rmi ghcr.io/openclaw/openclaw:latest')">Copiar</button></div><div class="doc-code-body">docker rmi ghcr.io/openclaw/openclaw:latest</div></div>
+          <div class="doc-h3">Paso 3 — Eliminar archivos</div>
+          <div class="doc-code-block"><div class="doc-code-header"><span>macOS / Linux</span><button class="doc-copy-btn" onclick="docCopy(this,'rm -rf ~/openclaw-local')">Copiar</button></div><div class="doc-code-body">rm -rf ~/openclaw-local</div></div>
+          <div class="doc-code-block"><div class="doc-code-header"><span>Windows PowerShell</span><button class="doc-copy-btn" onclick="docCopy(this,'Remove-Item -Recurse -Force \"$env:USERPROFILE\\openclaw-local\"')">Copiar</button></div><div class="doc-code-body">Remove-Item -Recurse -Force "$env:USERPROFILE\openclaw-local"</div></div>
+        </div>
+      </div>
+
+      <!-- ERRORES -->
+      <div class="doc-section" id="doc-errores">
+        <div class="doc-h1">🐛 Errores comunes</div>
+        <p class="doc-lead">Soluciones a los problemas más frecuentes.</p>
+
+        <div class="doc-h2">❌ pull access denied / repository does not exist</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>ERROR</span></div><div class="doc-code-body">Error response from daemon: pull access denied for phioranex/openclaw-docker</div></div>
+        <div class="doc-alert error"><strong>Causa:</strong> Tienes un <code>docker-compose.yml</code> antiguo con una imagen incorrecta.</div>
+        <p class="doc-p"><strong>Solución:</strong> Desinstala y reinstala limpio:</p>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'docker stop openclaw-local 2>/dev/null; docker rm openclaw-local 2>/dev/null\nrm -rf ~/openclaw-local\ncurl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash')">Copiar</button></div><div class="doc-code-body">docker stop openclaw-local 2>/dev/null; docker rm openclaw-local 2>/dev/null
+rm -rf ~/openclaw-local
+curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash</div></div>
+
+        <div class="doc-h2">❌ version is obsolete (warning)</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>WARNING</span></div><div class="doc-code-body">WARN: the attribute `version` is obsolete, it will be ignored</div></div>
+        <div class="doc-alert warn">No es un error crítico, solo un aviso. El <code>docker-compose.yml</code> antiguo tiene <code>version: '3.8'</code> que ya no es necesario en Compose v2. Reinstala con el script actualizado para eliminarlo.</div>
+
+        <div class="doc-h2">❌ Docker no está arrancado</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>ERROR</span></div><div class="doc-code-body">Cannot connect to the Docker daemon. Is the docker daemon running?</div></div>
+        <table class="doc-table">
+          <tr><th>Sistema</th><th>Solución</th></tr>
+          <tr><td>macOS / Windows</td><td>Abre Docker Desktop y espera al icono de la ballena quieto</td></tr>
+          <tr><td>Linux</td><td><code>sudo systemctl start docker</code></td></tr>
+          <tr><td>WSL2</td><td>Abre Docker Desktop en Windows y activa la integración WSL2</td></tr>
+        </table>
+
+        <div class="doc-h2">❌ Puerto 18789 ya en uso</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>ERROR</span></div><div class="doc-code-body">Bind for 0.0.0.0:18789 failed: port is already allocated</div></div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>docker-compose.yml — cambiar puerto</span><button class="doc-copy-btn" onclick="docCopy(this,'ports:\n  - \"18790:18789\"')">Copiar</button></div><div class="doc-code-body">ports:
+  - <span class="st">"18790:18789"</span>   <span class="cm"># cambia 18790 por el puerto libre que prefieras</span></div></div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'cd ~/openclaw-local && docker compose up -d')">Copiar</button></div><div class="doc-code-body">cd ~/openclaw-local && docker compose up -d</div></div>
+
+        <div class="doc-h2">❌ Contenedor arranca y se cae</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'docker logs openclaw-local\ndocker ps -a')">Copiar</button></div><div class="doc-code-body">docker logs openclaw-local   <span class="cm"># ver el error exacto</span>
+docker ps -a                 <span class="cm"># ver estado (Exited, Restarting...)</span></div></div>
+
+        <div class="doc-h2">❌ Permission denied (Linux)</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'sudo usermod -aG docker $USER\nnewgrp docker')">Copiar</button></div><div class="doc-code-body">sudo usermod -aG docker $USER
+newgrp docker</div></div>
+      </div>
+
+      <!-- REINSTALAR -->
+      <div class="doc-section" id="doc-reinstalar">
+        <div class="doc-h1">♻️ Reinstalación limpia</div>
+        <p class="doc-lead">Borra absolutamente todo y empieza desde cero.</p>
+        <div class="doc-alert warn"><strong>Cuidado:</strong> Elimina todos tus datos de OpenClaw. Solo hazlo si realmente necesitas empezar de cero.</div>
+
+        <div class="doc-h2">macOS / Linux / WSL2</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL — ejecutar todo de una vez</span><button class="doc-copy-btn" onclick="docCopy(this,'# 1. Parar y eliminar contenedor\ndocker stop openclaw-local 2>/dev/null || true\ndocker rm openclaw-local 2>/dev/null || true\n\n# 2. Eliminar imagen\ndocker rmi ghcr.io/openclaw/openclaw:latest 2>/dev/null || true\n\n# 3. Eliminar todos los archivos y datos\nrm -rf ~/openclaw-local\n\n# 4. Instalar de nuevo\ncurl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash')">Copiar todo</button></div><div class="doc-code-body"><span class="cm"># 1. Parar y eliminar contenedor</span>
+docker stop openclaw-local 2>/dev/null || true
+docker rm openclaw-local 2>/dev/null || true
+
+<span class="cm"># 2. Eliminar imagen (fuerza re-descarga completa)</span>
+docker rmi ghcr.io/openclaw/openclaw:latest 2>/dev/null || true
+
+<span class="cm"># 3. Eliminar todos los archivos y datos</span>
+rm -rf ~/openclaw-local
+
+<span class="cm"># 4. Instalar de nuevo desde cero</span>
+curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash</div></div>
+
+        <div class="doc-h2">Windows (PowerShell)</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>POWERSHELL</span><button class="doc-copy-btn" onclick="docCopy(this,'docker stop openclaw-local; docker rm openclaw-local\ndocker rmi ghcr.io/openclaw/openclaw:latest\nRemove-Item -Recurse -Force \"$env:USERPROFILE\\openclaw-local\"\nirm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.ps1 | iex')">Copiar</button></div><div class="doc-code-body">docker stop openclaw-local; docker rm openclaw-local
+docker rmi ghcr.io/openclaw/openclaw:latest
+Remove-Item -Recurse -Force "$env:USERPROFILE\openclaw-local"
+irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.ps1 | iex</div></div>
+
+        <div class="doc-h2">Limpiar caché de Docker (opcional)</div>
+        <div class="doc-code-block"><div class="doc-code-header"><span>TERMINAL</span><button class="doc-copy-btn" onclick="docCopy(this,'docker system prune -f')">Copiar</button></div><div class="doc-code-body">docker system prune -f   <span class="cm"># elimina imágenes, redes y caché no usados</span></div></div>
+        <div class="doc-alert info">No borra contenedores ni volúmenes activos. Solo limpia recursos huérfanos.</div>
+      </div>
+
+    </main>
+  </div><!-- /docs-layout -->
+
+  <footer>
+    <p>Hecho con <span class="footer-heart">♥</span> para la comunidad · No oficial · <a href="https://openclaw.ai/" target="_blank">openclaw.ai</a></p>
+    <p style="margin-top:8px;"><a href="https://github.com/nexxoads/openclaw-easy-install" target="_blank">GitHub del instalador</a> &nbsp;·&nbsp; <a href="https://docs.openclaw.ai" target="_blank">Docs oficiales</a></p>
+  </footer>
+</div>
 </div>
 
 <script>
-  // ── Detección automática del OS ─────────────────────────────────────────────
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    document.querySelector(`[onclick="showPage('${id}')"]`).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showDoc(id) {
+    document.querySelectorAll('.doc-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    document.getElementById('doc-' + id).classList.add('active');
+    document.querySelector(`[onclick="showDoc('${id}')"]`).classList.add('active');
+    document.querySelector('.docs-content').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function switchPills(prefix, id, btn) {
+    const section = btn.closest('.doc-section');
+    section.querySelectorAll('.os-pill').forEach(p => p.classList.remove('active'));
+    section.querySelectorAll('.os-block').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const el = document.getElementById(prefix + '-' + id);
+    if (el) el.classList.add('active');
+  }
+
   function detectOS() {
-    const ua = navigator.userAgent.toLowerCase();
-    const platform = (navigator.platform || '').toLowerCase();
-
-    if (platform.includes('win') || ua.includes('windows')) return 'windows';
-    if (platform.includes('mac') || ua.includes('macintosh') || ua.includes('mac os')) return 'macos';
-    if (ua.includes('linux') || ua.includes('ubuntu') || ua.includes('debian')) return 'linux';
-
-    // Fallback: intentar con userAgentData si está disponible
+    const ua = (navigator.userAgent || '').toLowerCase();
+    const pl = (navigator.platform  || '').toLowerCase();
+    if (pl.includes('win') || ua.includes('windows')) return 'windows';
+    if (pl.includes('mac') || ua.includes('macintosh')) return 'macos';
     if (navigator.userAgentData) {
-      const p = navigator.userAgentData.platform.toLowerCase();
-      if (p.includes('windows')) return 'windows';
-      if (p.includes('mac'))     return 'macos';
-      if (p.includes('linux'))   return 'linux';
+      const p = (navigator.userAgentData.platform || '').toLowerCase();
+      if (p.includes('win')) return 'windows';
+      if (p.includes('mac')) return 'macos';
     }
-
-    return 'linux'; // fallback
+    return 'linux';
   }
 
   function selectOS(os, auto = false) {
-    // Actualizar tabs
-    document.querySelectorAll('.os-tab').forEach(t => {
-      t.classList.remove('active');
-      t.setAttribute('aria-selected', 'false');
-    });
-    const tab = document.getElementById('tab-' + os);
-    if (tab) { tab.classList.add('active'); tab.setAttribute('aria-selected', 'true'); }
-
-    // Actualizar paneles
+    document.querySelectorAll('.os-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.os-panel').forEach(p => p.classList.remove('active'));
-    const panel = document.getElementById('panel-' + os);
-    if (panel) panel.classList.add('active');
-
-    // Banner de auto-detección
-    const banner = document.getElementById('autoBanner');
-    const msg    = document.getElementById('autoMsg');
+    const tab = document.getElementById('tab-' + os);
+    const pan = document.getElementById('panel-' + os);
+    if (tab) tab.classList.add('active');
+    if (pan) pan.classList.add('active');
     if (auto) {
       const names = { windows: 'Windows', macos: 'macOS', linux: 'Linux' };
-      msg.textContent = `✓ ${names[os]} detectado automáticamente — mostrando el comando correcto`;
-      banner.style.display = 'flex';
+      document.getElementById('autoMsg').textContent = `✓ ${names[os]} detectado automáticamente`;
+      document.getElementById('autoBanner').style.display = 'flex';
     }
   }
 
-  // ── Copiar al portapapeles ───────────────────────────────────────────────────
   function copyCmd(btn, text) {
     navigator.clipboard.writeText(text).then(() => {
       const orig = btn.innerHTML;
-      btn.innerHTML = '<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg> ¡Copiado!';
+      btn.innerHTML = '<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>¡Copiado!';
       btn.classList.add('copied');
       setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
     });
   }
 
-  // ── Init ─────────────────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', () => {
-    const os = detectOS();
-    selectOS(os, true);
-  });
+  function docCopy(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copiado';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => selectOS(detectOS(), true));
 </script>
 </body>
 </html>
