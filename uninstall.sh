@@ -1,51 +1,67 @@
-#!/usr/bin/env bash
-# OpenClaw — Desinstalador (macOS / Linux / WSL2)
+#!/bin/bash
 
-set -euo pipefail
+# ==============================================================================
+#  OpenClaw Easy Uninstaller
+#  Elimina el contenedor, la imagen y los archivos de configuración
+# ==============================================================================
+
+set -e
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m'
 
 echo ""
-echo "  OpenClaw — Desinstalador (Unix)"
+echo -e "${RED}${BOLD}  OpenClaw — Desinstalador${NC}"
 echo ""
-echo "  Se eliminará:"
-echo "  • Contenedor 'openclaw-local'"
-echo "  • Imagen phioranex/openclaw-docker (si existe localmente)"
-echo "  • directorio $HOME/openclaw-local (incluye tus datos)"
+echo -e "  ${YELLOW}Este proceso eliminará:${NC}"
+echo "  • El contenedor Docker 'openclaw-local'"
+echo "  • La imagen Docker descargada"
+echo "  • El directorio $HOME/openclaw-local (¡incluyendo tus datos!)"
 echo ""
-read -r -p "  ¿Desinstalar OpenClaw? [s/N] " confirm || true
-if [[ ! "${confirm:-}" =~ ^[sS]$ ]]; then
-  echo ""
-  echo "  Desinstalación cancelada."
-  echo ""
-  exit 0
+read -r -p "  ¿Estás seguro de que quieres desinstalar OpenClaw? [s/N]: " CONFIRM
+
+if [[ ! "$CONFIRM" =~ ^[sS]$ ]]; then
+    echo ""
+    echo "  Desinstalación cancelada."
+    echo ""
+    exit 0
 fi
 
 echo ""
-if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q '^openclaw-local$'; then
-  echo "  ▶ Eliminando contenedor..."
-  docker stop openclaw-local 2>/dev/null || true
-  docker rm openclaw-local 2>/dev/null || true
-  echo "  ✔ Contenedor eliminado"
+
+# Parar y eliminar el contenedor
+if docker ps -a --filter "name=openclaw-local" | grep -q openclaw-local; then
+    echo -e "  ${CYAN}▶ Parando y eliminando el contenedor...${NC}"
+    docker stop openclaw-local 2>/dev/null || true
+    docker rm openclaw-local 2>/dev/null || true
+    echo -e "  ${GREEN}✔ Contenedor eliminado${NC}"
 else
-  echo "  ⚠ No se encontró el contenedor 'openclaw-local'"
+    echo -e "  ${YELLOW}⚠ No se encontró el contenedor 'openclaw-local'${NC}"
 fi
 
-if docker images -q phioranex/openclaw-docker 2>/dev/null | grep -q .; then
-  echo "  ▶ Eliminando imagen..."
-  docker rmi phioranex/openclaw-docker:latest 2>/dev/null || true
-  echo "  ✔ Imagen eliminada (si no la usa otro contenedor)"
+# Eliminar la imagen
+if docker images ghcr.io/openclaw/openclaw | grep -q openclaw-docker; then
+    echo -e "  ${CYAN}▶ Eliminando imagen Docker...${NC}"
+    docker rmi ghcr.io/openclaw/openclaw:latest 2>/dev/null || true
+    echo -e "  ${GREEN}✔ Imagen eliminada${NC}"
 else
-  echo "  ⚠ No se encontró la imagen en local"
+    echo -e "  ${YELLOW}⚠ No se encontró la imagen Docker${NC}"
 fi
 
-INSTALL_DIR="${HOME}/openclaw-local"
-if [[ -d "$INSTALL_DIR" ]]; then
-  echo "  ▶ Eliminando $INSTALL_DIR..."
-  rm -rf "$INSTALL_DIR"
-  echo "  ✔ Directorio eliminado"
+# Eliminar el directorio de datos
+INSTALL_DIR="$HOME/openclaw-local"
+if [ -d "$INSTALL_DIR" ]; then
+    echo -e "  ${CYAN}▶ Eliminando archivos locales...${NC}"
+    rm -rf "$INSTALL_DIR"
+    echo -e "  ${GREEN}✔ Directorio $INSTALL_DIR eliminado${NC}"
 else
-  echo "  ⚠ No se encontró $INSTALL_DIR"
+    echo -e "  ${YELLOW}⚠ No se encontró el directorio $INSTALL_DIR${NC}"
 fi
 
 echo ""
-echo "  ✅ Desinstalación completada."
+echo -e "${GREEN}${BOLD}  ✅ OpenClaw ha sido desinstalado completamente.${NC}"
 echo ""

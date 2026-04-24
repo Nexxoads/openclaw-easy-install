@@ -366,7 +366,7 @@
       <span class="h1-open">Open</span><span class="h1-claw">Claw</span>
     </h1>
     <p class="tagline">
-      Instala OpenClaw en tu máquina local con un solo comando.<br>
+      Instala <a href="https://openclaw.ai/" target="_blank" style="color:var(--accent);text-decoration:none;">OpenClaw</a> en tu máquina local con un solo comando.<br>
       Sin tocar archivos. Sin conocimientos de Docker.
     </p>
   </header>
@@ -409,9 +409,9 @@
       <!-- Windows -->
       <div class="os-panel" id="panel-windows">
         <div class="cmd-label">// PowerShell (como Administrador)</div>
-        <div class="cmd-block" id="cmdBlockWindows">
-          <span class="prompt">PS C:\&gt; </span><span id="cmdTextWindows">irm https://raw.githubusercontent.com/Nexxoads/openclaw-easy-install/main/install.ps1 | iex</span>
-          <button type="button" class="copy-btn" id="copyBtnWindows">
+        <div class="cmd-block">
+          <span class="prompt">PS C:\&gt; </span>irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.ps1 | iex
+          <button class="copy-btn" onclick="copyCmd(this, 'irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.ps1 | iex')">
             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
             Copiar
           </button>
@@ -425,9 +425,9 @@
       <!-- macOS -->
       <div class="os-panel" id="panel-macos">
         <div class="cmd-label">// Terminal</div>
-        <div class="cmd-block" id="cmdBlockMacos">
-          <span class="prompt">$ </span><span id="cmdTextMacos">curl -sSL https://raw.githubusercontent.com/Nexxoads/openclaw-easy-install/main/install.sh | bash</span>
-          <button type="button" class="copy-btn" id="copyBtnMacos">
+        <div class="cmd-block">
+          <span class="prompt">$ </span>curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash
+          <button class="copy-btn" onclick="copyCmd(this, 'curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash')">
             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
             Copiar
           </button>
@@ -440,9 +440,9 @@
       <!-- Linux -->
       <div class="os-panel" id="panel-linux">
         <div class="cmd-label">// Terminal (Ubuntu / Debian / WSL2)</div>
-        <div class="cmd-block" id="cmdBlockLinux">
-          <span class="prompt">$ </span><span id="cmdTextLinux">curl -sSL https://raw.githubusercontent.com/Nexxoads/openclaw-easy-install/main/install.sh | bash</span>
-          <button type="button" class="copy-btn" id="copyBtnLinux">
+        <div class="cmd-block">
+          <span class="prompt">$ </span>curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash
+          <button class="copy-btn" onclick="copyCmd(this, 'curl -sSL https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/install.sh | bash')">
             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
             Copiar
           </button>
@@ -478,7 +478,7 @@
         <div class="step-num">03</div>
         <div class="step-content">
           <h3>Descarga la imagen oficial</h3>
-          <p>Hace <code>docker pull</code> de la imagen oficial <code>phioranex/openclaw-docker:latest</code> directamente desde Docker Hub.</p>
+          <p>Hace <code>docker pull</code> de la imagen <code>ghcr.io/openclaw/openclaw:latest</code> desde el GitHub Container Registry oficial de <a href="https://openclaw.ai/" target="_blank" style="color:var(--accent);text-decoration:none;">openclaw.ai</a>.</p>
         </div>
       </div>
       <div class="step">
@@ -502,55 +502,15 @@
   <footer>
     <p>Hecho con <span class="footer-heart">♥</span> para la comunidad · No oficial · Sin afiliación con los autores de OpenClaw</p>
     <p style="margin-top:8px;">
-      <a id="footerRepo" href="https://github.com/Nexxoads/openclaw-easy-install" target="_blank">GitHub</a>
+      <a href="https://github.com/nexxoads/openclaw-easy-install" target="_blank">GitHub</a>
       &nbsp;·&nbsp;
-      <a id="footerIssues" href="https://github.com/Nexxoads/openclaw-easy-install/issues" target="_blank">Reportar un problema</a>
+      <a href="https://github.com/nexxoads/openclaw-easy-install/issues" target="_blank">Reportar un problema</a>
     </p>
   </footer>
 
 </div>
 
 <script>
-  /** Repo GitHub: en Pages (usuario.github.io/nombre-repo/) se deduce sola; si no, fallback. */
-  const REPO_DEFAULT = 'Nexxoads/openclaw-easy-install';
-  const BRANCH = 'main';
-
-  function getGithubRepoSlug() {
-    const sub = location.hostname.toLowerCase().match(/^([^.]+)\.github\.io$/i);
-    if (sub) {
-      const pathParts = location.pathname.split('/').filter(Boolean);
-      const repo = pathParts[0];
-      if (repo) return sub[1] + '/' + repo;
-    }
-    return REPO_DEFAULT;
-  }
-
-  function applyGithubLinks() {
-    const slug = getGithubRepoSlug();
-    const raw = 'https://raw.githubusercontent.com/' + slug + '/' + BRANCH;
-    const win = 'irm ' + raw + '/install.ps1 | iex';
-    const sh  = 'curl -sSL ' + raw + '/install.sh | bash';
-    const tw = document.getElementById('cmdTextWindows');
-    const tm = document.getElementById('cmdTextMacos');
-    const tl = document.getElementById('cmdTextLinux');
-    if (tw) tw.textContent = win;
-    if (tm) tm.textContent = sh;
-    if (tl) tl.textContent = sh;
-    const base = 'https://github.com/' + slug;
-    const fr = document.getElementById('footerRepo');
-    const fi = document.getElementById('footerIssues');
-    if (fr) { fr.href = base; }
-    if (fi) { fi.href = base + '/issues'; }
-
-    function wireCopy(btn, textGetter) {
-      if (!btn) return;
-      btn.addEventListener('click', function () { copyCmd(btn, textGetter()); });
-    }
-    wireCopy(document.getElementById('copyBtnWindows'), function () { return document.getElementById('cmdTextWindows').textContent; });
-    wireCopy(document.getElementById('copyBtnMacos'),  function () { return document.getElementById('cmdTextMacos').textContent; });
-    wireCopy(document.getElementById('copyBtnLinux'),  function () { return document.getElementById('cmdTextLinux').textContent; });
-  }
-
   // ── Detección automática del OS ─────────────────────────────────────────────
   function detectOS() {
     const ua = navigator.userAgent.toLowerCase();
@@ -607,7 +567,6 @@
 
   // ── Init ─────────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
-    applyGithubLinks();
     const os = detectOS();
     selectOS(os, true);
   });

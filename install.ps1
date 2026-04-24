@@ -136,6 +136,20 @@ New-Item -ItemType Directory -Path $dataDir -Force | Out-Null
 Set-Location $installDir
 Write-Ok "Directorio creado en: $installDir"
 
+# ── Generar token de seguridad ────────────────────────────────────────────────
+Write-Step "Generando token de seguridad..."
+
+$envFile = Join-Path $installDir ".env"
+if ((Test-Path $envFile) -and (Get-Content $envFile | Select-String "OPENCLAW_GATEWAY_TOKEN")) {
+    Write-Ok "Token existente conservado"
+} else {
+    $tokenBytes = New-Object byte[] 32
+    [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($tokenBytes)
+    $gatewayToken = -join ($tokenBytes | ForEach-Object { $_.ToString("x2") })
+    "OPENCLAW_GATEWAY_TOKEN=$gatewayToken" | Out-File -FilePath $envFile -Encoding UTF8 -NoNewline
+    Write-Ok "Token generado y guardado en .env"
+}
+
 # ── Crear docker-compose.yml ───────────────────────────────────────────────────
 Write-Step "Generando fichero de configuración..."
 
@@ -144,15 +158,16 @@ version: '3.8'
 
 services:
   openclaw:
-    image: phioranex/openclaw-docker:latest
+    image: ghcr.io/openclaw/openclaw:latest
     container_name: openclaw-local
     restart: unless-stopped
     ports:
       - "18789:18789"
     volumes:
-      - ./data:/root/.openclaw
-    environment:
-      - NODE_ENV=production
+      - ./data:/home/node/.openclaw
+      - ./data/workspace:/home/node/.openclaw/workspace
+    env_file:
+      - .env
 "@
 
 $composeContent | Out-File -FilePath (Join-Path $installDir "docker-compose.yml") -Encoding UTF8
@@ -210,10 +225,10 @@ Write-Host "  4. Volver a arrancar:" -ForegroundColor Cyan
 Write-Host "     docker start openclaw-local"
 Write-Host ""
 Write-Host "  5. Desinstalar completamente:" -ForegroundColor Cyan
-Write-Host "     irm https://raw.githubusercontent.com/Nexxoads/openclaw-easy-install/main/uninstall.ps1 | iex"
+Write-Host "     irm https://raw.githubusercontent.com/nexxoads/openclaw-easy-install/main/uninstall.ps1 | iex"
 Write-Host ""
 Write-Host "  📁 Tus datos están guardados en: $installDir\data" -ForegroundColor White
 Write-Host ""
 Write-Host "  ¿Problemas? Abre un issue en:" -ForegroundColor Yellow
-Write-Host "  https://github.com/Nexxoads/openclaw-easy-install/issues"
+Write-Host "  https://github.com/nexxoads/openclaw-easy-install/issues"
 Write-Host ""
