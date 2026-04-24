@@ -22,8 +22,9 @@ echo "  • El contenedor Docker 'openclaw-local'"
 echo "  • La imagen Docker descargada"
 echo "  • El directorio $HOME/openclaw-local (¡incluyendo tus datos!)"
 echo ""
-# Leer desde /dev/tty para que funcione tanto con curl|bash como ejecutando el script directamente
-read -r -p "  ¿Estás seguro de que quieres desinstalar OpenClaw? [s/N]: " CONFIRM </dev/tty
+# Leer desde /dev/tty compatible con macOS y curl|bash
+echo -n "  ¿Estás seguro de que quieres desinstalar OpenClaw? [s/N]: "
+read -r CONFIRM < /dev/tty
 
 if [[ ! "$CONFIRM" =~ ^[sS]$ ]]; then
     echo ""
